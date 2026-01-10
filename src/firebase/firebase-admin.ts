@@ -1,23 +1,12 @@
 import * as admin from 'firebase-admin';
-import * as path from 'path';
-import * as fs from 'fs';
-
-const serviceAccountPath = path.join(
-  process.cwd(),
-  'serviceAccountKey.json'
-);
-
-if (!fs.existsSync(serviceAccountPath)) {
-  throw new Error('❌ serviceAccountKey.json not found');
-}
-
-const serviceAccount = JSON.parse(
-  fs.readFileSync(serviceAccountPath, 'utf8')
-);
 
 if (!admin.apps.length) {
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+    credential: admin.credential.cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    }),
   });
 }
 
